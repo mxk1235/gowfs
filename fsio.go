@@ -55,6 +55,9 @@ func (fs *FileSystem) Create(
 
 	// take over default transport to avoid redirect
 	req, _ := http.NewRequest("PUT", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err := fs.transport.RoundTrip(req)
 	if err != nil {
 		return false, err
@@ -68,6 +71,9 @@ func (fs *FileSystem) Create(
 	}
 
 	req, _ = http.NewRequest("PUT", u.String(), data)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err = fs.client.Do(req)
 	if err != nil {
 		fmt.Errorf("FileSystem.Create(%s) - bad url: %s", loc, err.Error())
@@ -114,6 +120,9 @@ func (fs *FileSystem) Open(p Path, offset, length int64, buffSize int) (io.ReadC
 	}
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err := fs.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -153,6 +162,9 @@ func (fs *FileSystem) Append(data io.Reader, p Path, buffersize int) (bool, erro
 
 	// take over default transport to avoid redirect
 	req, _ := http.NewRequest("POST", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err := fs.transport.RoundTrip(req)
 	if err != nil {
 		return false, err
@@ -166,6 +178,9 @@ func (fs *FileSystem) Append(data io.Reader, p Path, buffersize int) (bool, erro
 	}
 
 	req, _ = http.NewRequest("POST", u.String(), data)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err = fs.client.Do(req)
 	if err != nil {
 		return false, err
@@ -198,6 +213,9 @@ func (fs *FileSystem) Concat(target Path, sources []string) (bool, error) {
 	}
 
 	req, _ := http.NewRequest("POST", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err := fs.client.Do(req)
 	if err != nil {
 		return false, err

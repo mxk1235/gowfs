@@ -5,11 +5,14 @@ See https://github.com/vladimirvivien/gowfs.
 */
 package gowfs
 
-import "encoding/json"
-import "net"
-import "net/http"
-import "net/url"
-import "io/ioutil"
+import (
+	"crypto/tls"
+	"encoding/json"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"net/url"
+)
 
 const (
 	OP_OPEN                  = "OPEN"
@@ -51,13 +54,27 @@ func NewFileSystem(conf Configuration) (*FileSystem, error) {
 		Config: conf,
 	}
 	fs.transport = &http.Transport{
+		// Dial: func(netw, addr string) (net.Conn, error) {
+		// 	c, err := net.DialTimeout(netw, addr, conf.ConnectionTimeout)
+		// 	if err != nil {
+		// 		return nil, err
+		// 	}
+		// 	return c, nil
+		// },
 		Dial: func(netw, addr string) (net.Conn, error) {
-			c, err := net.DialTimeout(netw, addr, conf.ConnectionTimeout)
-			if err != nil {
-				return nil, err
+			if conf.UseTls {
+				return tls.DialWithDialer(
+					&net.Dialer{Timeout: conf.ConnectionTimeout},
+					netw, addr,
+					&tls.Config{InsecureSkipVerify: true})
+			} else {
+				c, err := net.DialTimeout(netw, addr, conf.ConnectionTimeout)
+				if err != nil {
+					return nil, err
+				}
+				return c, nil
 			}
 
-			return c, nil
 		},
 		MaxIdleConnsPerHost:   conf.MaxIdleConnsPerHost,
 		ResponseHeaderTimeout: conf.ResponseHeaderTimeout,

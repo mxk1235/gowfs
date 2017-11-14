@@ -12,6 +12,9 @@ func (fs *FileSystem) GetDelegationToken(renewer string) (Token, error) {
 	}
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	hdfsData, err := requestHdfsData(fs.client, *req)
 	if err != nil {
 		return Token{}, err
@@ -29,6 +32,9 @@ func (fs *FileSystem) GetDelegationTokens(renewer string) ([]Token, error) {
 	}
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	hdfsData, err := requestHdfsData(fs.client, *req)
 	if err != nil {
 		return nil, err
@@ -46,6 +52,9 @@ func (fs *FileSystem) RenewDelegationToken(token string) (int64, error) {
 	}
 
 	req, _ := http.NewRequest("PUT", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	hdfsData, err := requestHdfsData(fs.client, *req)
 	if err != nil {
 		return -1, err
@@ -64,6 +73,9 @@ func (fs *FileSystem) CancelDelegationToken(token string) (bool, error) {
 	}
 
 	req, _ := http.NewRequest("PUT", u.String(), nil)
+	if fs.Config.Kerb5Client != nil {
+		fs.Config.Kerb5Client.SetSPNEGOHeader(req, "")
+	}
 	rsp, err := fs.client.Do(req)
 	if err != nil {
 		return false, err
