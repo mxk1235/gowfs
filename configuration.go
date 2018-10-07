@@ -5,7 +5,7 @@ import "errors"
 import "time"
 import "net/url"
 import "os/user"
-import "gopkg.in/jcmturner/gokrb5.v2/client"
+import "gopkg.in/jcmturner/gokrb5.v5/client"
 
 const WebHdfsVer string = "/webhdfs/v1"
 
